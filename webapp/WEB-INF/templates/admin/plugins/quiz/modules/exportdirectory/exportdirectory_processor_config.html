@@ -1,0 +1,38 @@
+<fieldset class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectory}</label>
+		<div class="controls">
+			<@combo name="id_directory" items=list_directories default_value=idDirectory />
+			<button class="btn btn-small btn-primary">
+				<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelApply}
+			</button>
+			<span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectoryHelp}</span>
+		</div>
+	</div>
+	<#if hasDirectory?? && hasDirectory>
+		<#list list_parameters as parameter>
+			<div class="control-group">
+				<label class="control-label">${parameter.parameterName}</label>
+				<div class="controls">
+					<#assign idRecord = "idRecord" + parameter.idParameter>
+					<@combo name=idRecord items=list_entries default_value=parameter.idRecord />
+					<button name="removeFreeHtml" value="${parameter.idParameter}" class="btn btn-small btn-danger" title="#i18n{portal.util.labelRemove}">
+						<i class="icon-trash icon-white">&nbsp;</i>
+					</button>
+				</div>
+			</div>
+		</#list>
+		<br />
+		<br />
+		<div class="control-group">
+			<label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}</label>
+			<div class="controls">
+				<input type="text" name="" >
+				<@combo name="idRecord" items=list_entries default_value="" />
+				<button name="action" value="addFreeHtml" class="btn btn-small btn-primary" title="#i18n{portal.util.labelAdd}">
+					<i class="icon-plus icon-white">&nbsp;</i>
+				</button>
+			</div>
+		</div>
+	</#if>
+</fieldset>

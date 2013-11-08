@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<plug-in>
+    <!-- Plugin Informations -->
+    <name>quiz-exportdirectory</name>
+    <class>fr.paris.lutece.plugins.quiz.modules.exportdirectory.service.QuizExportDirectoryPlugin</class>
+    <version>2.0.0</version>
+    <description>module.quiz.exportdirectory.plugin.description</description>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
+    <provider>module.quiz.exportdirectory.plugin.provider</provider>
+    <provider-url>http://lutece.paris.fr</provider-url>
+    <icon-url>images/admin/skin/plugins/quiz/modules/exportdirectory/quiz-exportdirectory.png</icon-url>
+    <copyright>Copyright 2001-2013 Mairie de Paris</copyright>
+    <db-pool-required>1</db-pool-required>
+	<core-version-dependency>
+        <min-core-version>4.0.0</min-core-version>
+        <max-core-version/>
+    </core-version-dependency>
+</plug-in>

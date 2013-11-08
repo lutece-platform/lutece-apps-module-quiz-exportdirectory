@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="quiz-exportdirectory.freeHtmlParameterDAO" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.FreeHtmlParameterDAO"/>
+    <bean id="quiz-exportdirectory.quizQuestionRecordDAO" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.QuizQuestionRecordDAO"/>
+    
+    <bean id="quiz-exportdirectory.quizExportDirectoryOutputProcessor" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.service.QuizExportDirectoryOutputProcessor" />
+</beans>
