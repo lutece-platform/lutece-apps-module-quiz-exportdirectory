@@ -115,8 +115,6 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
 
     private static final int DEFAULT_ID_ENTRY_TYPE_TEXT = 6;
 
-    //    private QuizService _quizService;
-
     private int _nIdEntryTypeText;
 
     /**
@@ -300,113 +298,19 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
         if ( StringUtils.equals( strAction, ACTION_DO_ADD_FREE_HTML ) )
         {
             doAddFreeHtmlParameter( request, nIdQuiz );
+            return;
         }
-        else if ( StringUtils.isNotEmpty( request.getParameter( ACTION_DO_REMOVE_FREE_HTML ) ) )
+        if ( StringUtils.isNotEmpty( request.getParameter( ACTION_DO_REMOVE_FREE_HTML ) ) )
         {
             doRemoveFreeHtmlParameter( request );
+            return;
         }
-        else
+        String strIdNewDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
+        if ( StringUtils.isEmpty( strIdNewDirectory ) || !StringUtils.isNumeric( strIdNewDirectory ) )
         {
-            String strIdNewDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
-            if ( StringUtils.isNotEmpty( strIdNewDirectory ) && StringUtils.isNumeric( strIdNewDirectory ) )
-            {
-                int nIdNewDirectory = Integer.parseInt( strIdNewDirectory );
-                // We check if the quiz was already associated with a directory
-                String strDatastoreKey = getQuizDirectoryDatastoreKey( nIdQuiz );
-                String strIdDirectory = DatastoreService.getDataValue( strDatastoreKey, null );
-                if ( nIdNewDirectory == 0 )
-                {
-                    notifyProcessorDisabling( nIdQuiz );
-                    return;
-                }
-
-                if ( StringUtils.isNotEmpty( strIdDirectory ) && StringUtils.isNumeric( strIdDirectory ) )
-                {
-                    int nIdDirectory = Integer.parseInt( strIdDirectory );
-                    // If the directory has changed
-                    if ( nIdNewDirectory != nIdDirectory )
-                    {
-                        // We remove the current configuration of the quiz
-                        notifyProcessorDisabling( nIdQuiz );
-                        // We save the new association
-                        DatastoreService.setDataValue( strDatastoreKey, strIdNewDirectory );
-                    }
-                    else
-                    {
-                        Plugin pluginQuiz = PluginService.getPlugin( QuizService.PLUGIN_NAME );
-
-                        // We update the association between questions and records
-                        Collection<QuizQuestion> listQuestions = QuizQuestionHome.findAll( nIdQuiz, pluginQuiz );
-                        List<FreeHtmlParameter> listParameters = FreeHtmlParameterHome
-                                .getFreeHtmlParameterList( nIdQuiz );
-                        List<Integer> listUsedIdEntry = new ArrayList<Integer>( listQuestions.size( )
-                                + listParameters.size( ) );
-                        Map<Integer, Integer> mapQuestionRecord = new HashMap<Integer, Integer>( listQuestions.size( ) );
-                        for ( QuizQuestion question : listQuestions )
-                        {
-                            String strIdEntry = request.getParameter( MARK_ID_ENTRY_FOR_QUESTIONS
-                                    + question.getIdQuestion( ) );
-                            if ( StringUtils.isNotEmpty( strIdEntry ) && StringUtils.isNumeric( strIdEntry ) )
-                            {
-                                int nIdEntry = Integer.parseInt( strIdEntry );
-                                if ( listUsedIdEntry.contains( nIdEntry ) )
-                                {
-                                    request.getSession( ).setAttribute( SESSION_ATTRIBUTE_ERROR,
-                                            MESSAGE_ERROR_ENTRY_ALREADY_USED );
-                                    return;
-                                }
-                                listUsedIdEntry.add( nIdEntry );
-                                mapQuestionRecord.put( question.getIdQuestion( ), nIdEntry );
-                            }
-                        }
-
-                        for ( FreeHtmlParameter parameter : listParameters )
-                        {
-                            String strIdEntry = request.getParameter( MARK_ID_ENTRY_FOR_FREE_PARAMETERS
-                                    + parameter.getIdParameter( ) );
-                            if ( StringUtils.isNotEmpty( strIdEntry ) && StringUtils.isNumeric( strIdEntry ) )
-                            {
-                                int nIdEntry = Integer.parseInt( strIdEntry );
-                                if ( listUsedIdEntry.contains( nIdEntry ) )
-                                {
-                                    request.getSession( ).setAttribute( SESSION_ATTRIBUTE_ERROR,
-                                            MESSAGE_ERROR_ENTRY_ALREADY_USED );
-                                    return;
-                                }
-                                listUsedIdEntry.add( nIdEntry );
-                                parameter.setIdEntry( nIdEntry );
-                            }
-                            else
-                            {
-                                parameter.setIdEntry( 0 );
-                            }
-                        }
-
-                        // If there is no error, we save the mapping
-                        // We first remove every association between questions and entries
-                        for ( QuizQuestion question : listQuestions )
-                        {
-                            QuizQuestionEntryHome.doRemoveAssociation( question.getIdQuestion( ) );
-                        }
-                        // We now save associations between questions and entries
-                        for ( Entry<Integer, Integer> entry : mapQuestionRecord.entrySet( ) )
-                        {
-                            QuizQuestionEntryHome.doAssociateQuestionAndEntry( entry.getKey( ), entry.getValue( ) );
-                        }
-                        // Finally we update free HTML parameters
-                        for ( FreeHtmlParameter parameter : listParameters )
-                        {
-                            FreeHtmlParameterHome.modifyFreeHtmlParameter( parameter );
-                        }
-                    }
-                }
-                else
-                {
-                    // We associate the directory to the quiz
-                    DatastoreService.setDataValue( strDatastoreKey, strIdNewDirectory );
-                }
-            }
+            return;
         }
+        updateQuizDirectoryMapping( request, nIdQuiz, Integer.parseInt( strIdNewDirectory ) );
     }
 
     /**
@@ -498,6 +402,107 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
     }
 
     /**
+     * Update the mapping between a quiz and a directory
+     * @param request The request
+     * @param nIdQuiz The id of the quiz
+     * @param nIdNewDirectory The id of the directory to map with the quiz. The
+     *            id may be the same that the saved directory id or not
+     */
+    private void updateQuizDirectoryMapping( HttpServletRequest request, int nIdQuiz, int nIdNewDirectory )
+    {
+        // We check if the quiz was already associated with a directory
+        String strDatastoreKey = getQuizDirectoryDatastoreKey( nIdQuiz );
+        String strIdDirectory = DatastoreService.getDataValue( strDatastoreKey, null );
+        if ( nIdNewDirectory == 0 )
+        {
+            notifyProcessorDisabling( nIdQuiz );
+            return;
+        }
+        if ( StringUtils.isNotEmpty( strIdDirectory ) && StringUtils.isNumeric( strIdDirectory ) )
+        {
+            int nIdDirectory = Integer.parseInt( strIdDirectory );
+            // If the directory has changed
+            if ( nIdNewDirectory != nIdDirectory )
+            {
+                // We remove the current configuration of the quiz
+                notifyProcessorDisabling( nIdQuiz );
+                // We save the new association
+                DatastoreService.setDataValue( strDatastoreKey, Integer.toString( nIdNewDirectory ) );
+            }
+            else
+            {
+                Plugin pluginQuiz = PluginService.getPlugin( QuizService.PLUGIN_NAME );
+
+                // We update the association between questions and records
+                Collection<QuizQuestion> listQuestions = QuizQuestionHome.findAll( nIdQuiz, pluginQuiz );
+                List<FreeHtmlParameter> listParameters = FreeHtmlParameterHome.getFreeHtmlParameterList( nIdQuiz );
+                List<Integer> listUsedIdEntry = new ArrayList<Integer>( listQuestions.size( ) + listParameters.size( ) );
+                Map<Integer, Integer> mapQuestionRecord = new HashMap<Integer, Integer>( listQuestions.size( ) );
+                for ( QuizQuestion question : listQuestions )
+                {
+                    String strIdEntry = request.getParameter( MARK_ID_ENTRY_FOR_QUESTIONS + question.getIdQuestion( ) );
+                    if ( StringUtils.isNotEmpty( strIdEntry ) && StringUtils.isNumeric( strIdEntry ) )
+                    {
+                        int nIdEntry = Integer.parseInt( strIdEntry );
+                        if ( listUsedIdEntry.contains( nIdEntry ) )
+                        {
+                            request.getSession( ).setAttribute( SESSION_ATTRIBUTE_ERROR,
+                                    MESSAGE_ERROR_ENTRY_ALREADY_USED );
+                            return;
+                        }
+                        listUsedIdEntry.add( nIdEntry );
+                        mapQuestionRecord.put( question.getIdQuestion( ), nIdEntry );
+                    }
+                }
+
+                for ( FreeHtmlParameter parameter : listParameters )
+                {
+                    String strIdEntry = request.getParameter( MARK_ID_ENTRY_FOR_FREE_PARAMETERS
+                            + parameter.getIdParameter( ) );
+                    if ( StringUtils.isNotEmpty( strIdEntry ) && StringUtils.isNumeric( strIdEntry ) )
+                    {
+                        int nIdEntry = Integer.parseInt( strIdEntry );
+                        if ( listUsedIdEntry.contains( nIdEntry ) )
+                        {
+                            request.getSession( ).setAttribute( SESSION_ATTRIBUTE_ERROR,
+                                    MESSAGE_ERROR_ENTRY_ALREADY_USED );
+                            return;
+                        }
+                        listUsedIdEntry.add( nIdEntry );
+                        parameter.setIdEntry( nIdEntry );
+                    }
+                    else
+                    {
+                        parameter.setIdEntry( 0 );
+                    }
+                }
+
+                // If there is no error, we save the mapping
+                // We first remove every association between questions and entries
+                for ( QuizQuestion question : listQuestions )
+                {
+                    QuizQuestionEntryHome.doRemoveAssociation( question.getIdQuestion( ) );
+                }
+                // We now save associations between questions and entries
+                for ( Entry<Integer, Integer> entry : mapQuestionRecord.entrySet( ) )
+                {
+                    QuizQuestionEntryHome.doAssociateQuestionAndEntry( entry.getKey( ), entry.getValue( ) );
+                }
+                // Finally we update free HTML parameters
+                for ( FreeHtmlParameter parameter : listParameters )
+                {
+                    FreeHtmlParameterHome.modifyFreeHtmlParameter( parameter );
+                }
+            }
+        }
+        else
+        {
+            // We associate the directory to the quiz
+            DatastoreService.setDataValue( strDatastoreKey, Integer.toString( nIdNewDirectory ) );
+        }
+    }
+
+    /**
      * Get the datastore key to associate a quiz to a directory
      * @param nIdQuiz The id of the quiz
      * @return The datastore key
@@ -507,22 +512,9 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
         return DATASTORE_KEY_QUIZ_EXPORT_DIRECTORY + nIdQuiz;
     }
 
-    //    /**
-    //     * Get the quiz service
-    //     * @return The quiz service
-    //     */
-    //    private QuizService getQuizService( )
-    //    {
-    //        if ( _quizService == null )
-    //        {
-    //            _quizService = SpringContextService.getBean( QuizService.BEAN_QUIZ_SERVICE );
-    //        }
-    //        return _quizService;
-    //    }
-
     /**
      * Get the id of entries of type text
-     * @return The id of entries opf type text
+     * @return The id of entries of type text
      */
     private int getIdEntryTypeText( )
     {
