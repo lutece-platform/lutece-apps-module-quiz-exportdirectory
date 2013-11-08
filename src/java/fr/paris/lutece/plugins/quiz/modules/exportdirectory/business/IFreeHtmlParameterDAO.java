@@ -79,4 +79,13 @@ public interface IFreeHtmlParameterDAO
      * @return the list of parameters. The list may be empty but is never null.
      */
     List<FreeHtmlParameter> getFreeHtmlParameterList( int nIdQuiz, Plugin plugin );
+
+    /**
+     * Check if an entry is associated with any free parameter
+     * @param nIdEntry The id of the entry
+     * @param plugin The plugin
+     * @return True if the entry is associated with a free parameter, false
+     *         otherwise
+     */
+    boolean isEntryAssociated( int nIdEntry, Plugin plugin );
 }

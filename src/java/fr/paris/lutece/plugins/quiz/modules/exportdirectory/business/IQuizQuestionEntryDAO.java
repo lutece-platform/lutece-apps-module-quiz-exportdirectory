@@ -75,4 +75,12 @@ public interface IQuizQuestionEntryDAO
      *         id of entries of the directory associated with the quiz
      */
     Map<Integer, Integer> getQuestionAssociations( int nIdQuiz, Plugin plugin );
+
+    /**
+     * Check if an entry is associated with any question
+     * @param nIdEntry The id of the entry
+     * @param plugin The plugin
+     * @return True if the entry is associated with a question, false otherwise
+     */
+    boolean isEntryAssociated( int nIdEntry, Plugin plugin );
 }

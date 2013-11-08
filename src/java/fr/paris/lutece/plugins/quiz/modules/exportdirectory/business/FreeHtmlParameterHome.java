@@ -101,4 +101,15 @@ public final class FreeHtmlParameterHome
     {
         return _dao.getFreeHtmlParameterList( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
     }
+
+    /**
+     * Check if an entry is associated with any free parameter
+     * @param nIdEntry The id of the entry
+     * @return True if the entry is associated with a free parameter, false
+     *         otherwise
+     */
+    public static boolean isEntryAssociated( int nIdEntry )
+    {
+        return _dao.isEntryAssociated( nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
 }

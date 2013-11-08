@@ -49,6 +49,7 @@ public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
     private static final String SQL_QUERY_INSERT_ASSOCIATION = " INSERT INTO quiz_exportdirectory_associations ( id_question, id_entry ) VALUES (?,?)";
     private static final String SQL_QUERY_REMOVE_ASSOCIATION = " DELETE FROM quiz_exportdirectory_associations WHERE id_question = ? ";
     private static final String SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ = " SELECT assoc.id_question, assoc.id_entry FROM quiz_exportdirectory_associations assoc INNER JOIN quiz_question question ON assoc.id_question = question.id_question WHERE question.id_quiz = ? ";
+    private static final String SQL_QUERY_IS_ENTRY_ASSOCIATED = " SELECT id_entry FROM quiz_exportdirectory_associations WHERE id_entry = ? ";
 
     /**
      * {@inheritDoc}
@@ -111,4 +112,25 @@ public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
         return mapQuestionsEntries;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEntryAssociated( int nIdEntry, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_IS_ENTRY_ASSOCIATED, plugin );
+        daoUtil.setInt( 1, nIdEntry );
+        daoUtil.executeQuery( );
+        boolean bResult;
+        if ( daoUtil.next( ) )
+        {
+            bResult = true;
+        }
+        else
+        {
+            bResult = false;
+        }
+        daoUtil.free( );
+        return bResult;
+    }
 }

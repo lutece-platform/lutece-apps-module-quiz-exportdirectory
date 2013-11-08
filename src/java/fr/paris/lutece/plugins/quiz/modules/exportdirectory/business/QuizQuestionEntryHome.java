@@ -95,4 +95,14 @@ public final class QuizQuestionEntryHome
     {
         return _dao.getQuestionAssociations( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
     }
+
+    /**
+     * Check if an entry is associated with any question
+     * @param nIdEntry The id of the entry
+     * @return True if the entry is associated with a question, false otherwise
+     */
+    public static boolean isEntryAssociated( int nIdEntry )
+    {
+        return _dao.isEntryAssociated( nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
 }

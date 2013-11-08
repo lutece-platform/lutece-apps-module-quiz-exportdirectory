@@ -51,6 +51,7 @@ public class FreeHtmlParameterDAO implements IFreeHtmlParameterDAO
     private static final String SQL_QUERY_UPDATE_FREE_HTML_PARAMETER = " UPDATE quiz_exportdirectory_parameters SET id_quiz = ?, parameter_name = ?, id_entry = ? WHERE id_parameter = ? ";
     private static final String SQL_QUERY_FIND_BY_PRIMARY_KEY = " SELECT id_parameter, id_quiz, parameter_name, id_entry FROM quiz_exportdirectory_parameters WHERE id_parameter = ? ";
     private static final String SQL_QUERY_FIND_FREE_HTML_PARAMETER_LIST = " SELECT id_parameter, id_quiz, parameter_name, id_entry FROM quiz_exportdirectory_parameters WHERE id_quiz = ? ";
+    private static final String SQL_QUERY_IS_ENTRY_ASSOCIATED = "SELECT id_entry FROM quiz_exportdirectory_parameters WHERE id_entry = ?";
 
     /**
      * Get a new primary key
@@ -162,4 +163,25 @@ public class FreeHtmlParameterDAO implements IFreeHtmlParameterDAO
         return listParams;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEntryAssociated( int nIdEntry, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_IS_ENTRY_ASSOCIATED, plugin );
+        daoUtil.setInt( 1, nIdEntry );
+        daoUtil.executeQuery( );
+        boolean bResult;
+        if ( daoUtil.next( ) )
+        {
+            bResult = true;
+        }
+        else
+        {
+            bResult = false;
+        }
+        daoUtil.free( );
+        return bResult;
+    }
 }

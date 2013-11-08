@@ -81,9 +81,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
 {
-    private static final String PROCESSOR_ID = "quiz-exportdirectory.exportDirectoryProcessor";
+    public static final String DATASTORE_KEY_QUIZ_EXPORT_DIRECTORY = "quiz-exportdirectory.export.idDirectory.";
 
-    private static final String DATASTORE_KEY_QUIZ_EXPORT_DIRECTORY = "quiz-exportdirectory.export.idDirectory.";
+    private static final String PROCESSOR_ID = "quiz-exportdirectory.exportDirectoryProcessor";
 
     private static final String MESSAGE_PROCESSOR_DESCRIPTION = "module.quiz.exportdirectory.exportDirectoryProcessor.title";
     private static final String MESSAGE_ERROR_ENTRY_ALREADY_USED = "module.quiz.exportdirectory.exportDirectoryProcessor.errorEntryAlreadyUsed";

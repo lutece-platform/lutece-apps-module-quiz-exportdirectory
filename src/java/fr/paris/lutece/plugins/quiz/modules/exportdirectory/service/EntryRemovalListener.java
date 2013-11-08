@@ -33,38 +33,39 @@
  */
 package fr.paris.lutece.plugins.quiz.modules.exportdirectory.service;
 
-import fr.paris.lutece.plugins.directory.business.DirectoryRemovalListenerService;
-import fr.paris.lutece.plugins.directory.business.EntryRemovalListenerService;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.FreeHtmlParameterHome;
+import fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.QuizQuestionEntryHome;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.util.RemovalListener;
+
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
- * quiz export directory plugin
+ * entry removal listener
  */
-public class QuizExportDirectoryPlugin extends Plugin
+public class EntryRemovalListener implements RemovalListener
 {
-    /**
-     * Name of the plugin
-     */
-    public static final String PLUGIN_NAME = "quiz-exportdirectory";
+    private static final String MESSAGE_ENTRY_USED_BY_QUIZ_EXPORT_DIRECTORY = "module.quiz.exportdirectory.message.entryUsedByQuizExportDirectory";
 
-    /**
-     * Get the instance of the plugin
-     * @return the instance of the plugin
-     */
-    public static Plugin getPlugin( )
-    {
-        return PluginService.getPlugin( PLUGIN_NAME );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void init( )
+    public boolean canBeRemoved( String id )
     {
-        EntryRemovalListenerService.getService( ).registerListener( new EntryRemovalListener( ) );
-        DirectoryRemovalListenerService.getService( ).registerListener( new DirectoryRemovalListener( ) );
+        if ( StringUtils.isNotEmpty( id ) && StringUtils.isNumeric( id ) )
+        {
+            int nIdEntry = Integer.parseInt( id );
+            return !QuizQuestionEntryHome.isEntryAssociated( nIdEntry )
+                    && !FreeHtmlParameterHome.isEntryAssociated( nIdEntry );
+        }
+        return true;
     }
+
+    @Override
+    public String getRemovalRefusedMessage( String id, Locale locale )
+    {
+        return I18nService.getLocalizedString( MESSAGE_ENTRY_USED_BY_QUIZ_EXPORT_DIRECTORY, locale );
+    }
+
 }

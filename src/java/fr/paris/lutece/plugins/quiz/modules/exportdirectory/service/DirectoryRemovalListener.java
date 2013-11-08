@@ -33,38 +33,49 @@
  */
 package fr.paris.lutece.plugins.quiz.modules.exportdirectory.service;
 
-import fr.paris.lutece.plugins.directory.business.DirectoryRemovalListenerService;
-import fr.paris.lutece.plugins.directory.business.EntryRemovalListenerService;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.datastore.DatastoreService;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.util.RemovalListener;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
+
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
- * quiz export directory plugin
+ * Directory removal listener
  */
-public class QuizExportDirectoryPlugin extends Plugin
+public class DirectoryRemovalListener implements RemovalListener
 {
-    /**
-     * Name of the plugin
-     */
-    public static final String PLUGIN_NAME = "quiz-exportdirectory";
+    private static final String MESSAGE_DIRECTORY_USED_BY_QUIZ_EXPORT_DIRECTORY = "module.quiz.exportdirectory.message.directoryUsedByQuizExportDirectory";
 
     /**
-     * Get the instance of the plugin
-     * @return the instance of the plugin
+     * {@inheritDoc}
      */
-    public static Plugin getPlugin( )
+    @Override
+    public boolean canBeRemoved( String id )
     {
-        return PluginService.getPlugin( PLUGIN_NAME );
+        ReferenceList refList = DatastoreService
+                .getDataByPrefix( QuizExportDirectoryOutputProcessor.DATASTORE_KEY_QUIZ_EXPORT_DIRECTORY );
+        for ( ReferenceItem refItem : refList )
+        {
+            if ( StringUtils.equals( id, refItem.getName( ) ) )
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void init( )
+    public String getRemovalRefusedMessage( String id, Locale locale )
     {
-        EntryRemovalListenerService.getService( ).registerListener( new EntryRemovalListener( ) );
-        DirectoryRemovalListenerService.getService( ).registerListener( new DirectoryRemovalListener( ) );
+        return I18nService.getLocalizedString( MESSAGE_DIRECTORY_USED_BY_QUIZ_EXPORT_DIRECTORY, locale );
     }
+
 }
