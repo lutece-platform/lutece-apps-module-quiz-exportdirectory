@@ -81,6 +81,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
 {
+    /**
+     * Key prefix in datastore to associate quiz and directories
+     */
     public static final String DATASTORE_KEY_QUIZ_EXPORT_DIRECTORY = "quiz-exportdirectory.export.idDirectory.";
 
     private static final String PROCESSOR_ID = "quiz-exportdirectory.exportDirectoryProcessor";
