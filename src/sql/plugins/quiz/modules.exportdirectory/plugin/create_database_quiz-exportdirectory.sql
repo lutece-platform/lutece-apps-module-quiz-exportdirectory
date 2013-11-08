@@ -10,6 +10,6 @@ CREATE TABLE quiz_exportdirectory_parameters (
 DROP TABLE IF EXISTS quiz_exportdirectory_associations;
 CREATE TABLE quiz_exportdirectory_associations (
   id_question INT NOT NULL,
-  id_record INT NOT NULL,
+  id_entry INT NOT NULL,
   PRIMARY KEY  (id_question)
 );

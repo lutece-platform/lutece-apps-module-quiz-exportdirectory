@@ -41,14 +41,14 @@ import java.util.Map;
 
 
 /**
- * DAO for quiz questions and directory records association
+ * DAO for quiz questions and directory entries association
  */
-public class QuizQuestionRecordDAO implements IQuizQuestionRecordDAO
+public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
 {
-    private static final String SQL_QUERY_SELECT_ASSOCIATION = " SELECT id_record FROM quiz_exportdirectory_associations WHERE id_question = ? ";
-    private static final String SQL_QUERY_INSERT_ASSOCIATION = " INSERT INTO quiz_exportdirectory_associations ( id_question, id_record ) VALUES (?,?)";
+    private static final String SQL_QUERY_SELECT_ASSOCIATION = " SELECT id_entry FROM quiz_exportdirectory_associations WHERE id_question = ? ";
+    private static final String SQL_QUERY_INSERT_ASSOCIATION = " INSERT INTO quiz_exportdirectory_associations ( id_question, id_entry ) VALUES (?,?)";
     private static final String SQL_QUERY_REMOVE_ASSOCIATION = " DELETE FROM quiz_exportdirectory_associations WHERE id_question = ? ";
-    private static final String SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ = " SELECT assoc.id_question, assoc.id_record FROM quiz_exportdirectory_associations assoc INNER JOIN quiz_question question ON assoc.id_question = question.id_question WHERE question.id_quiz = ? ";
+    private static final String SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ = " SELECT assoc.id_question, assoc.id_entry FROM quiz_exportdirectory_associations assoc INNER JOIN quiz_question question ON assoc.id_question = question.id_question WHERE question.id_quiz = ? ";
 
     /**
      * {@inheritDoc}
@@ -59,24 +59,24 @@ public class QuizQuestionRecordDAO implements IQuizQuestionRecordDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ASSOCIATION, plugin );
         daoUtil.setInt( 1, nIdQuestion );
         daoUtil.executeQuery( );
-        int nIdRecord = 0;
+        int nIdEntry = 0;
         if ( daoUtil.next( ) )
         {
-            nIdRecord = daoUtil.getInt( 1 );
+            nIdEntry = daoUtil.getInt( 1 );
         }
         daoUtil.free( );
-        return nIdRecord;
+        return nIdEntry;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void doAssociateQuestionAndRecord( int nIdQuestion, int nIdRecord, Plugin plugin )
+    public void doAssociateQuestionAndEntry( int nIdQuestion, int nIdEntry, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ASSOCIATION, plugin );
         daoUtil.setInt( 1, nIdQuestion );
-        daoUtil.setInt( 2, nIdRecord );
+        daoUtil.setInt( 2, nIdEntry );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -101,13 +101,14 @@ public class QuizQuestionRecordDAO implements IQuizQuestionRecordDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ, plugin );
         daoUtil.setInt( 1, nIdQuiz );
-        Map<Integer, Integer> mapQuestionsRecords = new HashMap<Integer, Integer>( );
+        daoUtil.executeQuery( );
+        Map<Integer, Integer> mapQuestionsEntries = new HashMap<Integer, Integer>( );
         while ( daoUtil.next( ) )
         {
-            mapQuestionsRecords.put( daoUtil.getInt( 1 ), daoUtil.getInt( 2 ) );
+            mapQuestionsEntries.put( daoUtil.getInt( 1 ), daoUtil.getInt( 2 ) );
         }
         daoUtil.free( );
-        return mapQuestionsRecords;
+        return mapQuestionsEntries;
     }
 
 }

@@ -33,46 +33,66 @@
  */
 package fr.paris.lutece.plugins.quiz.modules.exportdirectory.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.plugins.quiz.modules.exportdirectory.service.QuizExportDirectoryPlugin;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.util.Map;
 
 
 /**
- * Interface of DAO for quiz questions and directory records association
+ * Home for Quiz questions and directory entries association
  */
-public interface IQuizQuestionRecordDAO
+public final class QuizQuestionEntryHome
 {
-    /**
-     * Get the id of the record associated with the question
-     * @param nIdQuestion The id of the question
-     * @param plugin The plugin
-     * @return the id of the record associated with the question, or 0 if the
-     *         question is not associated with any record
-     */
-    int getQuestionAssociation( int nIdQuestion, Plugin plugin );
+    private static IQuizQuestionEntryDAO _dao = SpringContextService
+            .getBean( "quiz-exportdirectory.quizQuestionEntryDAO" );
 
     /**
-     * Associates a question with a record
-     * @param nIdQuestion The id of the question
-     * @param nIdRecord The id of the record
-     * @param plugin the plugin
+     * Private constructor
      */
-    void doAssociateQuestionAndRecord( int nIdQuestion, int nIdRecord, Plugin plugin );
+    private QuizQuestionEntryHome( )
+    {
+        // Private constructor
+    }
 
     /**
-     * Remove an association between a question and a record
+     * Get the id of the entry associated with the question
      * @param nIdQuestion The id of the question
-     * @param plugin The plugin
+     * @return the id of the entry associated with the question, or 0 if the
+     *         question is not associated with any entry
      */
-    void doRemoveAssociation( int nIdQuestion, Plugin plugin );
+    public static int getQuestionAssociation( int nIdQuestion )
+    {
+        return _dao.getQuestionAssociation( nIdQuestion, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
 
     /**
-     * Get the association between questions of a quiz and directory records
+     * Associates a question with a entry
+     * @param nIdQuestion The id of the question
+     * @param nIdEntry The id of the entry
+     */
+    public static void doAssociateQuestionAndEntry( int nIdQuestion, int nIdEntry )
+    {
+        _dao.doAssociateQuestionAndEntry( nIdQuestion, nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
+
+    /**
+     * Remove an association between a question and a entry
+     * @param nIdQuestion The id of the question
+     */
+    public static void doRemoveAssociation( int nIdQuestion )
+    {
+        _dao.doRemoveAssociation( nIdQuestion, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
+
+    /**
+     * Get the association between questions of a quiz and directory entries
      * @param nIdQuiz The id of the quiz
-     * @param plugin The plugin
      * @return A map which keys are id of questions of the quiz, and values are
-     *         id of records of the directory associated with the quiz
+     *         id of entries of the directory associated with the quiz
      */
-    Map<Integer, Integer> getQuestionAssociations( int nIdQuiz, Plugin plugin );
+    public static Map<Integer, Integer> getQuestionAssociations( int nIdQuiz )
+    {
+        return _dao.getQuestionAssociations( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
 }

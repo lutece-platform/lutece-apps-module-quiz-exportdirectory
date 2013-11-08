@@ -3,7 +3,7 @@
 
 <beans>
     <bean id="quiz-exportdirectory.freeHtmlParameterDAO" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.FreeHtmlParameterDAO"/>
-    <bean id="quiz-exportdirectory.quizQuestionRecordDAO" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.QuizQuestionRecordDAO"/>
+    <bean id="quiz-exportdirectory.quizQuestionEntryDAO" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.business.QuizQuestionEntryDAO"/>
     
     <bean id="quiz-exportdirectory.quizExportDirectoryOutputProcessor" class="fr.paris.lutece.plugins.quiz.modules.exportdirectory.service.QuizExportDirectoryOutputProcessor" />
 </beans>
