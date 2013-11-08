@@ -147,7 +147,7 @@ public class FreeHtmlParameterDAO implements IFreeHtmlParameterDAO
         daoUtil.setInt( 1, nIdQuiz );
         daoUtil.executeQuery( );
         List<FreeHtmlParameter> listParams = new ArrayList<FreeHtmlParameter>( );
-        if ( daoUtil.next( ) )
+        while ( daoUtil.next( ) )
         {
             FreeHtmlParameter parameter = new FreeHtmlParameter( );
             parameter.setIdParameter( daoUtil.getInt( 1 ) );

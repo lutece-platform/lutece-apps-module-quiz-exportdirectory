@@ -465,7 +465,16 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
     private void doAddFreeHtmlParameter( HttpServletRequest request, int nIdQuiz )
     {
         String strParameterName = request.getParameter( PARAMETER_FREE_HTML_PARAMETER_NAME );
-        int nIdEntry = Integer.parseInt( request.getParameter( PARAMETER_ENTRY_ID ) );
+        String strIdEntry = request.getParameter( PARAMETER_ENTRY_ID );
+        int nIdEntry;
+        if ( StringUtils.isEmpty( strIdEntry ) || !StringUtils.isNumeric( strIdEntry ) )
+        {
+            nIdEntry = 0;
+        }
+        else
+        {
+            nIdEntry = Integer.parseInt( strIdEntry );
+        }
 
         if ( StringUtils.isNotEmpty( strParameterName ) )
         {
