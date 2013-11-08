@@ -305,12 +305,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
             doRemoveFreeHtmlParameter( request );
             return;
         }
-        String strIdNewDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
-        if ( StringUtils.isEmpty( strIdNewDirectory ) || !StringUtils.isNumeric( strIdNewDirectory ) )
-        {
-            return;
-        }
-        updateQuizDirectoryMapping( request, nIdQuiz, Integer.parseInt( strIdNewDirectory ) );
+        updateQuizDirectoryMapping( request, nIdQuiz );
     }
 
     /**
@@ -405,11 +400,16 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
      * Update the mapping between a quiz and a directory
      * @param request The request
      * @param nIdQuiz The id of the quiz
-     * @param nIdNewDirectory The id of the directory to map with the quiz. The
-     *            id may be the same that the saved directory id or not
      */
-    private void updateQuizDirectoryMapping( HttpServletRequest request, int nIdQuiz, int nIdNewDirectory )
+    private void updateQuizDirectoryMapping( HttpServletRequest request, int nIdQuiz )
     {
+        String strIdNewDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
+        if ( StringUtils.isEmpty( strIdNewDirectory ) || !StringUtils.isNumeric( strIdNewDirectory ) )
+        {
+            return;
+        }
+        int nIdNewDirectory = Integer.parseInt( strIdNewDirectory );
+
         // We check if the quiz was already associated with a directory
         String strDatastoreKey = getQuizDirectoryDatastoreKey( nIdQuiz );
         String strIdDirectory = DatastoreService.getDataValue( strDatastoreKey, null );
@@ -427,7 +427,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
                 // We remove the current configuration of the quiz
                 notifyProcessorDisabling( nIdQuiz );
                 // We save the new association
-                DatastoreService.setDataValue( strDatastoreKey, Integer.toString( nIdNewDirectory ) );
+                DatastoreService.setDataValue( strDatastoreKey, strIdNewDirectory );
             }
             else
             {
@@ -498,7 +498,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
         else
         {
             // We associate the directory to the quiz
-            DatastoreService.setDataValue( strDatastoreKey, Integer.toString( nIdNewDirectory ) );
+            DatastoreService.setDataValue( strDatastoreKey, strIdNewDirectory );
         }
     }
 
