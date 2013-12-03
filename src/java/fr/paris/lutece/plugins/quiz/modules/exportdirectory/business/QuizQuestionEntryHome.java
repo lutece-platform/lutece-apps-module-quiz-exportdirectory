@@ -67,13 +67,24 @@ public final class QuizQuestionEntryHome
     }
 
     /**
-     * Associates a question with a entry
+     * Associates a question with a entr
+     * @param nIdQuiz The id of the quiz
      * @param nIdQuestion The id of the question
      * @param nIdEntry The id of the entry
      */
-    public static void doAssociateQuestionAndEntry( int nIdQuestion, int nIdEntry )
+    public static void doAssociateQuestionAndEntry( int nIdQuiz, int nIdQuestion, int nIdEntry )
     {
-        _dao.doAssociateQuestionAndEntry( nIdQuestion, nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
+        _dao.doAssociateQuestionAndEntry( nIdQuiz, nIdQuestion, nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
+
+    /**
+     * Associates a question with a entry
+     * @param nIdQuiz The id of the quiz
+     * @param nIdEntry The id of the entry
+     */
+    public static void doAssociateScoreAndEntry( int nIdQuiz, int nIdEntry )
+    {
+        _dao.doAssociateScoreAndEntry( nIdQuiz, nIdEntry, QuizExportDirectoryPlugin.getPlugin( ) );
     }
 
     /**
@@ -86,6 +97,15 @@ public final class QuizQuestionEntryHome
     }
 
     /**
+     * Remove an association between a score and a entry
+     * @param nIdQuestion The id of the quiz
+     */
+    public static void doRemoveScore( int nIdQuiz )
+    {
+        _dao.doRemoveScore( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
+
+    /**
      * Get the association between questions of a quiz and directory entries
      * @param nIdQuiz The id of the quiz
      * @return A map which keys are id of questions of the quiz, and values are
@@ -94,6 +114,17 @@ public final class QuizQuestionEntryHome
     public static Map<Integer, Integer> getQuestionAssociations( int nIdQuiz )
     {
         return _dao.getQuestionAssociations( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
+    }
+
+    /**
+     * Get the association between score of a quiz and directory entries
+     * @param nIdQuiz The id of the quiz
+     * @return A map which keys are id of the quiz, and values are
+     *         id of entries of the directory associated with the score quiz
+     */
+    public static Map<Integer, Integer> getQuestionAssociationScore( int nIdQuiz )
+    {
+        return _dao.getQuestionAssociationScore( nIdQuiz, QuizExportDirectoryPlugin.getPlugin( ) );
     }
 
     /**

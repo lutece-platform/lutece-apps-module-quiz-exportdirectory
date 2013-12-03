@@ -1,66 +1,76 @@
 <fieldset class="form-horizontal">
-	<#if error??>
-		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert" href="http://localhost:8080/lutece/jsp/admin/plugins/quiz/processors/ManageOutputProcessors.jsp?quiz_id=${quiz_id}#">x</a>
-			<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{${error}}
-		</div>
-	</#if>
-	<h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleDirectory}</h4>
-	<div class="control-group">
-		<label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectory}</label>
-		<div class="controls">
-			<@combo name="idDirectory" items=list_directories default_value=idDirectory />
-			<button class="btn btn-small btn-primary">
-				<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{module.quiz.exportdirectory.labelApply}
-			</button>
-			<span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectoryHelp}</span>
-		</div>
-	</div>
-	<#if hasDirectory?? && hasDirectory>
-		<#if list_questions?? && list_questions?size &gt; 0>
-			<h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleQuestionAssociations}</h4>
-			<#list list_questions as question>
-				<div class="control-group">
-					<label class="control-label">${question.questionLabel}</label>			
-					<div class="controls">
-						<#assign idEntry = "idEntryForQuestions" + question.idQuestion>
-						<@combo name=idEntry items=list_entries default_value=map_question_entry[question.idQuestion?string] />
-					</div>
-				</div>
-			</#list>
-		</#if>
-		<#if list_parameters?? && list_parameters?size &gt; 0>
-			<h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleParameterAssociations}</h4>
-			<#list list_parameters as parameter>
-				<div class="control-group">
-					<label class="control-label">${parameter.parameterName}</label>
-					<div class="controls">
-						<#assign idEntry = "idEntryForParameters" + parameter.idParameter>
-						<@combo name=idEntry items=list_entries default_value=parameter.idEntry />
-						<button name="removeFreeHtml" value="${parameter.idParameter}" class="btn btn-small btn-danger" title="#i18n{portal.util.labelRemove}">
-							<i class="icon-trash icon-white">&nbsp;</i>
-						</button>
-					</div>
-				</div>
-			</#list>
-		</#if>
-		<br />
-		<br />
-		<h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}</h4>
-		<br />
-		<div class="control-group">
-			<label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterName}</label>
-			<div class="controls">
-				<div class="input-prepend">
-					<span class="add-on">${input_prefix}</span>
-					<input type="text" name="freeHtmlParameterName" >
-				</div>
-				<@combo name="entry_id" items=list_entries default_value="" />
-				<button name="action" value="addFreeHtml" class="btn btn-small btn-primary" title="#i18n{portal.util.labelCreate}">
-					<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelCreate}
-				</button>
-				<span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterHelp}</span>
-			</div>
-		</div>
-	</#if>
+    <#if error??>
+        <div class="alert alert-error">
+            <a class="close" data-dismiss="alert" href="http://localhost:8080/lutece/jsp/admin/plugins/quiz/processors/ManageOutputProcessors.jsp?quiz_id=${quiz_id}#">x</a>
+            <i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{${error}}
+        </div>
+    </#if>
+    <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleDirectory}</h4>
+    <div class="control-group">
+        <label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectory}</label>
+        <div class="controls">
+            <@combo name="idDirectory" items=list_directories default_value=idDirectory />
+            <button class="btn btn-small btn-primary">
+                <i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{module.quiz.exportdirectory.labelApply}
+            </button>
+            <span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectoryHelp}</span>
+        </div>
+    </div>
+    <#if hasDirectory?? && hasDirectory>
+        <#if list_questions?? && list_questions?size &gt; 0>
+            <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleQuestionAssociations}</h4>
+            <#list list_questions as question>
+                <div class="control-group">
+                    <label class="control-label">${question.questionLabel}</label>          
+                    <div class="controls">
+                        <#assign idEntry = "idEntryForQuestions" + question.idQuestion>
+                        <@combo name=idEntry items=list_entries default_value=map_question_entry[question.idQuestion?string] />
+                    </div>
+                </div>
+            </#list>
+        </#if>
+        <#if list_parameters?? && list_parameters?size &gt; 0>
+            <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleParameterAssociations}</h4>
+            <#list list_parameters as parameter>
+                <div class="control-group">
+                    <label class="control-label">${parameter.parameterName}</label>
+                    <div class="controls">
+                        <#assign idEntry = "idEntryForParameters" + parameter.idParameter>
+                        <@combo name=idEntry items=list_entries default_value=parameter.idEntry />
+                        <button name="removeFreeHtml" value="${parameter.idParameter}" class="btn btn-small btn-danger" title="#i18n{portal.util.labelRemove}">
+                            <i class="icon-trash icon-white">&nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+            </#list>
+        </#if>
+        <br />
+        <br />
+        <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelScore}</h4>
+        <br />
+        <div class="control-group">
+            <label class="control-label">Score</label>
+            <div class="controls">
+                <@combo name="score" items=list_entries default_value=score! />
+            </div>
+        </div>
+        <br />
+        <br />
+        <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}</h4>
+        <br />
+        <div class="control-group">
+            <label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterName}</label>
+            <div class="controls">
+                <div class="input-prepend">
+                    <span class="add-on">${input_prefix}</span>
+                    <input type="text" name="freeHtmlParameterName" >
+                </div>
+                <@combo name="entry_id" items=list_entries default_value="" />
+                <button name="action" value="addFreeHtml" class="btn btn-small btn-primary" title="#i18n{portal.util.labelCreate}">
+                    <i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelCreate}
+                </button>
+                <span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterHelp}</span>
+            </div>
+        </div>
+    </#if>
 </fieldset>

@@ -106,6 +106,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
     private static final String MARK_LIST_ENTRIES = "list_entries";
     private static final String MARK_INPUT_PREFIXE = "input_prefix";
     private static final String MARK_LIST_QUESTIONS = "list_questions";
+    private static final String MARK_SCORE = "score";
     private static final String MARK_MAP_QUESTION_ENTRY = "map_question_entry";
     private static final String MARK_ERROR = "error";
     private static final String MARK_QUIZ_ID = "quiz_id";
@@ -124,7 +125,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
      * {@inheritDoc}
      */
     @Override
-    public void doProcessOutputProcessor( Map<String, String[]> mapAnswers, int nIdQuiz )
+    public void doProcessOutputProcessor( Map<String, String[]> mapAnswers, String strScore, int nIdQuiz )
     {
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
         Plugin pluginQuiz = PluginService.getPlugin( QuizService.PLUGIN_NAME );
@@ -137,6 +138,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
             List<FreeHtmlParameter> listFreeParameters = FreeHtmlParameterHome.getFreeHtmlParameterList( nIdQuiz );
 
             Map<Integer, Integer> mapQuestionEntry = QuizQuestionEntryHome.getQuestionAssociations( nIdQuiz );
+            Map<Integer, Integer> mapScoreEntry = QuizQuestionEntryHome.getQuestionAssociationScore( nIdQuiz );
             List<Integer> listEntriesAnswered = new ArrayList<Integer>( );
             // We create the directory record
             int nIdDirectory = Integer.parseInt( strIdDirectory );
@@ -170,6 +172,14 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
                     String[] values = mapAnswers.get( parameter.getParameterName( ) );
                     doCreateDirectoryRecordField( parameter.getIdEntry( ), record, values, pluginDirectory );
                 }
+            }
+
+            Integer nScoreIdEntry = mapScoreEntry.get( nIdQuiz );
+            if ( nScoreIdEntry != null && nScoreIdEntry > 0 )
+            {
+                String[] values = new String[1];
+                values[0] = strScore;
+                doCreateDirectoryRecordField( nScoreIdEntry, record, values, pluginDirectory );
             }
         }
     }
@@ -249,6 +259,9 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
 
             Map<Integer, Integer> mapQuestionEntry = QuizQuestionEntryHome.getQuestionAssociations( nIdQuiz );
             Map<String, String> mapQuestionsString = new HashMap<String, String>( mapQuestionEntry.size( ) );
+
+            Map<Integer, Integer> mapScoreEntry = QuizQuestionEntryHome.getQuestionAssociationScore( nIdQuiz );
+
             for ( QuizQuestion question : collectionQuestion )
             {
                 if ( mapQuestionEntry.get( question.getIdQuestion( ) ) == null )
@@ -260,6 +273,11 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
             for ( Entry<Integer, Integer> entry : mapQuestionEntry.entrySet( ) )
             {
                 mapQuestionsString.put( entry.getKey( ).toString( ), entry.getValue( ).toString( ) );
+            }
+
+            for ( Entry<Integer, Integer> entry : mapScoreEntry.entrySet( ) )
+            {
+                model.put( MARK_SCORE, entry.getValue( ).toString( ) );
             }
 
             model.put( MARK_LIST_QUESTIONS, collectionQuestion );
@@ -439,8 +457,19 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
                 // We update the association between questions and records
                 Collection<QuizQuestion> listQuestions = QuizQuestionHome.findAll( nIdQuiz, pluginQuiz );
                 List<FreeHtmlParameter> listParameters = FreeHtmlParameterHome.getFreeHtmlParameterList( nIdQuiz );
-                List<Integer> listUsedIdEntry = new ArrayList<Integer>( listQuestions.size( ) + listParameters.size( ) );
+                List<Integer> listUsedIdEntry = new ArrayList<Integer>( listQuestions.size( ) + listParameters.size( )
+                        + 1 );
                 Map<Integer, Integer> mapQuestionRecord = new HashMap<Integer, Integer>( listQuestions.size( ) );
+
+                // Clean Score
+                String strIdEntryScore = request.getParameter( MARK_SCORE );
+                if ( StringUtils.isNotEmpty( strIdEntryScore ) && StringUtils.isNumeric( strIdEntryScore ) )
+                {
+                    // Insert score value
+                    int nIdEntry = Integer.parseInt( strIdEntryScore );
+                    listUsedIdEntry.add( nIdEntry );
+                }
+
                 for ( QuizQuestion question : listQuestions )
                 {
                     String strIdEntry = request.getParameter( MARK_ID_ENTRY_FOR_QUESTIONS + question.getIdQuestion( ) );
@@ -480,6 +509,12 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
                     }
                 }
 
+                QuizQuestionEntryHome.doRemoveScore( nIdQuiz );
+                if ( StringUtils.isNotEmpty( strIdEntryScore ) && StringUtils.isNumeric( strIdEntryScore ) )
+                {
+                    int nIdEntry = Integer.parseInt( strIdEntryScore );
+                    QuizQuestionEntryHome.doAssociateScoreAndEntry( nIdQuiz, nIdEntry );
+                }
                 // If there is no error, we save the mapping
                 // We first remove every association between questions and entries
                 for ( QuizQuestion question : listQuestions )
@@ -489,7 +524,7 @@ public class QuizExportDirectoryOutputProcessor implements IQuizOutputProcessor
                 // We now save associations between questions and entries
                 for ( Entry<Integer, Integer> entry : mapQuestionRecord.entrySet( ) )
                 {
-                    QuizQuestionEntryHome.doAssociateQuestionAndEntry( entry.getKey( ), entry.getValue( ) );
+                    QuizQuestionEntryHome.doAssociateQuestionAndEntry( nIdQuiz, entry.getKey( ), entry.getValue( ) );
                 }
                 // Finally we update free HTML parameters
                 for ( FreeHtmlParameter parameter : listParameters )

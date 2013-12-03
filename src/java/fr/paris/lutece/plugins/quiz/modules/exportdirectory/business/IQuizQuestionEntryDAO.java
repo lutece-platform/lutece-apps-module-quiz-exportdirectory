@@ -58,7 +58,15 @@ public interface IQuizQuestionEntryDAO
      * @param nIdEntry The id of the entry
      * @param plugin the plugin
      */
-    void doAssociateQuestionAndEntry( int nIdQuestion, int nIdEntry, Plugin plugin );
+    void doAssociateQuestionAndEntry( int nIdQuiz, int nIdQuestion, int nIdEntry, Plugin plugin );
+
+    /**
+     * Associates a score with a entry
+     * @param nIdQuiz The id of the question
+     * @param nIdEntry The id of the entry
+     * @param plugin the plugin
+     */
+    void doAssociateScoreAndEntry( int nIdQuiz, int nIdEntry, Plugin plugin );
 
     /**
      * Remove an association between a question and a entry
@@ -68,6 +76,13 @@ public interface IQuizQuestionEntryDAO
     void doRemoveAssociation( int nIdQuestion, Plugin plugin );
 
     /**
+     * Remove an association between a score and a entry
+     * @param nIdQuestion The id of the quiz
+     * @param plugin The plugin
+     */
+    void doRemoveScore( int nIdQuiz, Plugin plugin );
+
+    /**
      * Get the association between questions of a quiz and directory entries
      * @param nIdQuiz The id of the quiz
      * @param plugin The plugin
@@ -75,6 +90,15 @@ public interface IQuizQuestionEntryDAO
      *         id of entries of the directory associated with the quiz
      */
     Map<Integer, Integer> getQuestionAssociations( int nIdQuiz, Plugin plugin );
+
+    /**
+     * Get the association between score of a quiz and directory entries
+     * @param nIdQuiz The id of the quiz
+     * @param plugin The plugin
+     * @return A map which keys are id of questions of the quiz, and values are
+     *         id of entries of the directory associated with the score quiz
+     */
+    Map<Integer, Integer> getQuestionAssociationScore( int nIdQuiz, Plugin plugin );
 
     /**
      * Check if an entry is associated with any question

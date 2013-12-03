@@ -46,9 +46,12 @@ import java.util.Map;
 public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
 {
     private static final String SQL_QUERY_SELECT_ASSOCIATION = " SELECT id_entry FROM quiz_exportdirectory_associations WHERE id_question = ? ";
-    private static final String SQL_QUERY_INSERT_ASSOCIATION = " INSERT INTO quiz_exportdirectory_associations ( id_question, id_entry ) VALUES (?,?)";
+    private static final String SQL_QUERY_INSERT_ASSOCIATION = " INSERT INTO quiz_exportdirectory_associations ( id_quiz, id_question, id_entry ) VALUES (?,?,?)";
+    private static final String SQL_QUERY_INSERT_SCORE = " INSERT INTO quiz_exportdirectory_associations ( id_quiz, id_entry ) VALUES (?,?)";
     private static final String SQL_QUERY_REMOVE_ASSOCIATION = " DELETE FROM quiz_exportdirectory_associations WHERE id_question = ? ";
+    private static final String SQL_QUERY_REMOVE_SCORE = " DELETE FROM quiz_exportdirectory_associations WHERE id_quiz = ? AND id_question IS NULL";
     private static final String SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ = " SELECT assoc.id_question, assoc.id_entry FROM quiz_exportdirectory_associations assoc INNER JOIN quiz_question question ON assoc.id_question = question.id_question WHERE question.id_quiz = ? ";
+    private static final String SQL_QUERY_SELECT_SCORE_BY_QUIZ = " SELECT assoc.id_quiz, assoc.id_entry FROM quiz_exportdirectory_associations assoc WHERE assoc.id_quiz = ? AND assoc.id_question IS NULL";
     private static final String SQL_QUERY_IS_ENTRY_ASSOCIATED = " SELECT id_entry FROM quiz_exportdirectory_associations WHERE id_entry = ? ";
 
     /**
@@ -73,10 +76,21 @@ public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
      * {@inheritDoc}
      */
     @Override
-    public void doAssociateQuestionAndEntry( int nIdQuestion, int nIdEntry, Plugin plugin )
+    public void doAssociateQuestionAndEntry( int nIdQuiz, int nIdQuestion, int nIdEntry, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ASSOCIATION, plugin );
-        daoUtil.setInt( 1, nIdQuestion );
+        daoUtil.setInt( 1, nIdQuiz );
+        daoUtil.setInt( 2, nIdQuestion );
+        daoUtil.setInt( 3, nIdEntry );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+    }
+
+    @Override
+    public void doAssociateScoreAndEntry( int nIdQuiz, int nIdEntry, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_SCORE, plugin );
+        daoUtil.setInt( 1, nIdQuiz );
         daoUtil.setInt( 2, nIdEntry );
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -98,9 +112,39 @@ public class QuizQuestionEntryDAO implements IQuizQuestionEntryDAO
      * {@inheritDoc}
      */
     @Override
+    public void doRemoveScore( int ndQuiz, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_REMOVE_SCORE, plugin );
+        daoUtil.setInt( 1, ndQuiz );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Map<Integer, Integer> getQuestionAssociations( int nIdQuiz, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL_ASSOCIATIONS_BY_QUIZ, plugin );
+        daoUtil.setInt( 1, nIdQuiz );
+        daoUtil.executeQuery( );
+        Map<Integer, Integer> mapQuestionsEntries = new HashMap<Integer, Integer>( );
+        while ( daoUtil.next( ) )
+        {
+            mapQuestionsEntries.put( daoUtil.getInt( 1 ), daoUtil.getInt( 2 ) );
+        }
+        daoUtil.free( );
+        return mapQuestionsEntries;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Integer, Integer> getQuestionAssociationScore( int nIdQuiz, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_SCORE_BY_QUIZ, plugin );
         daoUtil.setInt( 1, nIdQuiz );
         daoUtil.executeQuery( );
         Map<Integer, Integer> mapQuestionsEntries = new HashMap<Integer, Integer>( );
