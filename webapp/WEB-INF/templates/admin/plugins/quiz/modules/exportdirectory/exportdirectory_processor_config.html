@@ -1,76 +1,85 @@
-<fieldset class="form-horizontal">
-    <#if error??>
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="http://localhost:8080/lutece/jsp/admin/plugins/quiz/processors/ManageOutputProcessors.jsp?quiz_id=${quiz_id}#">x</a>
-            <i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{${error}}
-        </div>
-    </#if>
-    <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleDirectory}</h4>
-    <div class="control-group">
-        <label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectory}</label>
-        <div class="controls">
-            <@combo name="idDirectory" items=list_directories default_value=idDirectory />
-            <button class="btn btn-small btn-primary">
-                <i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{module.quiz.exportdirectory.labelApply}
-            </button>
-            <span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectoryHelp}</span>
-        </div>
+<#if error??>
+  <div class="alert alert-danger alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4><i class="icon fa fa-ban"></i> #i18n{${error}}</h4>
+  </div>
+</#if>
+
+<h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleDirectory}</h4>
+<div class="form-group">
+  <label class="control-label col-xs-12 col-sm-3 col-xs-12 col-sm-3">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectory}</label>
+  <div class="col-xs-12 col-sm-6">
+    <div class="input-group">
+      <@comboWithParams name="idDirectory" default_value=idDirectory additionalParameters=" class=\"form-control input-xs\"" items=list_directories  />
+      <span class="input-group-btn">
+        <button class="btn btn-xs btn-primary btn-flat">
+          <i class="fa fa-check"></i> #i18n{module.quiz.exportdirectory.labelApply}
+        </button>
+      </span>
     </div>
-    <#if hasDirectory?? && hasDirectory>
-        <#if list_questions?? && list_questions?size &gt; 0>
-            <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleQuestionAssociations}</h4>
-            <#list list_questions as question>
-                <div class="control-group">
-                    <label class="control-label">${question.questionLabel}</label>          
-                    <div class="controls">
-                        <#assign idEntry = "idEntryForQuestions" + question.idQuestion>
-                        <@combo name=idEntry items=list_entries default_value=map_question_entry[question.idQuestion?string] />
-                    </div>
-                </div>
-            </#list>
-        </#if>
-        <#if list_parameters?? && list_parameters?size &gt; 0>
-            <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleParameterAssociations}</h4>
-            <#list list_parameters as parameter>
-                <div class="control-group">
-                    <label class="control-label">${parameter.parameterName}</label>
-                    <div class="controls">
-                        <#assign idEntry = "idEntryForParameters" + parameter.idParameter>
-                        <@combo name=idEntry items=list_entries default_value=parameter.idEntry />
-                        <button name="removeFreeHtml" value="${parameter.idParameter}" class="btn btn-small btn-danger" title="#i18n{portal.util.labelRemove}">
-                            <i class="icon-trash icon-white">&nbsp;</i>
-                        </button>
-                    </div>
-                </div>
-            </#list>
-        </#if>
-        <br />
-        <br />
-        <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelScore}</h4>
-        <br />
-        <div class="control-group">
-            <label class="control-label">Score</label>
-            <div class="controls">
-                <@combo name="score" items=list_entries default_value=score! />
-            </div>
+    <p class="help-text">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelDirectoryHelp}<p>
+  </div>
+</div>
+
+<#if hasDirectory?? && hasDirectory>
+  <#if list_questions?? && list_questions?size &gt; 0>
+    <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleQuestionAssociations}</h4>
+    <#list list_questions as question>
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">${question.questionLabel}</label>
+        <div class="control-label col-xs-12 col-sm-3">
+            <#assign idEntry="idEntryForQuestions" + question.idQuestion>
+            <@comboWithParams name=idEntry items=list_entries default_value=map_question_entry[question.idQuestion?string] additionalParameters=" class=\"form-control input-xs\"" />
         </div>
-        <br />
-        <br />
-        <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}</h4>
-        <br />
-        <div class="control-group">
-            <label class="control-label">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterName}</label>
-            <div class="controls">
-                <div class="input-prepend">
-                    <span class="add-on">${input_prefix}</span>
-                    <input type="text" name="freeHtmlParameterName" >
-                </div>
-                <@combo name="entry_id" items=list_entries default_value="" />
-                <button name="action" value="addFreeHtml" class="btn btn-small btn-primary" title="#i18n{portal.util.labelCreate}">
-                    <i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelCreate}
-                </button>
-                <span class="help-block">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterHelp}</span>
-            </div>
+      </div>
+    </#list>
+  </#if>
+  <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelScore}</h4>
+  <div class="form-group">
+    <label class="control-label col-xs-12 col-sm-3">Score</label>
+    <div class="control-label col-xs-12 col-sm-3">
+      <@comboWithParams name="score" items=list_entries default_value=score! additionalParameters=" class=\"form-control input-xs\"" />
+    </div>
+  </div>
+
+  <#if list_parameters?? && list_parameters?size &gt; 0>
+    <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.titleParameterAssociations}</h4>
+    <#list list_parameters as parameter>
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">${parameter.parameterName}</label>
+        <div class="control-label col-xs-12 col-sm-3">
+          <div class="input-group">
+            <#assign idEntry="idEntryForParameters" + parameter.idParameter>
+            <@comboWithParams name=idEntry default_value=parameter.idEntry?string additionalParameters=" class=\"form-control input-xs\"" items=list_entries />
+            <span class="input-group-btn">
+              <button name="removeFreeHtml" value="${parameter.idParameter}" class="btn btn-xs btn-danger btn-flat" title="#i18n{portal.util.labelRemove}">
+                <i class="fa fa-trash"></i>
+              </button>
+            </span>
+          </div>
         </div>
-    </#if>
-</fieldset>
+      </div>
+    </#list>
+  </#if>
+  <h4>#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}</h4>
+  <div class="form-group">
+    <label class="control-label col-xs-12 col-sm-3">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterName}</label>
+    <div class="col-xs-12 col-sm-6">
+      <div class="input-group">
+        <span class="input-group-addon">${input_prefix}</span>
+        <input type="text" name="freeHtmlParameterName" class="form-control input-sm">
+      </div>
+      <p class="help-text">#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelFreeParameterHelp}</p>
+      <div class="input-group">
+        <@comboWithParams name="entry_id" default_value="" additionalParameters=" class=\"form-control input-sm\"" items=list_entries />
+        <span class="input-group-btn">
+          <button name="action" value="addFreeHtml" class="btn btn-flat btn-sm btn-primary" title="#i18n{module.quiz.exportdirectory.exportDirectoryProcessor.labelAddFreeParameter}">
+            <i class="fa fa-plus"></i> #i18n{portal.util.labelAdd}
+          </button>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+</#if>
